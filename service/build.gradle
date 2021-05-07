@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.5'
+}
+
+group 'net.vanderkast'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    enabled false
+}
+
+bootJar {
+    baseName 'fs4r-service'
+    enabled true
+}
+
+dependencies {
+    compile project(':core')
+
+    def SPRING_BOOT = '2.4.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: SPRING_BOOT
+
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: SPRING_BOOT
+}
+
+test {
+    useJUnitPlatform()
+}
