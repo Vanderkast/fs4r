@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("api/v1/test")
-public class TestDelivery {
+public class Fs4rDelivery {
     private final Read read;
 
     @Autowired
-    public TestDelivery(Read read) {
+    public Fs4rDelivery(Read read) {
         this.read = read;
     }
 

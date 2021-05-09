@@ -1,4 +1,4 @@
-package net.vanderkast.fs4r.lock;
+package net.vanderkast.fs4r.concurrent;
 
 public interface PathLock {
     void lockInterruptibly() throws InterruptedException;

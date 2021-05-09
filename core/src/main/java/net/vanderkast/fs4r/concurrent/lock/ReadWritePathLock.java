@@ -1,4 +1,9 @@
-package net.vanderkast.fs4r.lock;
+package net.vanderkast.fs4r.concurrent.lock;
+
+import net.vanderkast.fs4r.concurrent.LockedDelete;
+import net.vanderkast.fs4r.concurrent.LockedMove;
+import net.vanderkast.fs4r.concurrent.LockedRead;
+import net.vanderkast.fs4r.concurrent.PathLock;
 
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;

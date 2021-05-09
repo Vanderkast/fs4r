@@ -1,5 +1,6 @@
-package net.vanderkast.fs4r.lock;
+package net.vanderkast.fs4r.concurrent;
 
+import net.vanderkast.fs4r.concurrent.lock.ReadWritePathLock;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
