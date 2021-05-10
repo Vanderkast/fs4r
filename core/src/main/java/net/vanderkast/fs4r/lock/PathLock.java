@@ -1,7 +1,9 @@
 package net.vanderkast.fs4r.lock;
 
-public interface PathLock {
-    void lockInterruptibly() throws InterruptedException;
+import java.nio.file.Path;
+import java.util.concurrent.locks.Lock;
 
-    void unlock();
+@FunctionalInterface
+public interface PathLock {
+    Lock on(Path path);
 }

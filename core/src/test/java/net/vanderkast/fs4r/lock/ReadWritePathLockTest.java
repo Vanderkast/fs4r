@@ -3,156 +3,55 @@ package net.vanderkast.fs4r.lock;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class ReadWritePathLockTest {
-    private static final long WAIT_THRESHOLD = 20;
-    private final ReadWritePathLock lock = new ReadWritePathLock();
+    private final ReadWritePathLock locker = new ReadWritePathLock();
 
     @Test
-    void readerReaderConcurrent() throws InterruptedException {
+    void sameLockOnEqualPaths() {
         // given
-        final Path sharedPath = mock(Path.class);
-        AtomicInteger readersCount = new AtomicInteger();
-        AtomicBoolean parallel = new AtomicBoolean();
-        Runnable work = () -> {
-            var lock = this.lock.forRead(sharedPath);
-            try {
-                lock.lockInterruptibly();
-                var count = readersCount.incrementAndGet();
-                if (count == 2)
-                    parallel.set(true);
-                Thread.sleep(WAIT_THRESHOLD);
-            } catch (InterruptedException e) {
-                fail(e);
-            } finally {
-                readersCount.decrementAndGet();
-                lock.unlock();
-            }
-        };
-        var reader1 = new Thread(work);
-        var reader2 = new Thread(work);
+        var p1 = Path.of("the", "path");
+        var p2 = Path.of("the", "path");
+        assertEquals(p1, p2);
 
         // when
-        reader1.start();
-        reader2.start();
-        reader2.join();
-        reader1.join();
+        var l1 = locker.onPath(p1);
+        var l2 = locker.onPath(p2);
 
         // then
-        assertTrue(parallel.get());
+        assertSame(l1, l2);
     }
 
     @Test
-    void writerWriterSerialized() throws InterruptedException {
+    void differentLockOnDifferentPaths() {
         // given
-        final Path sharedPath = mock(Path.class);
-        AtomicInteger concurrentWriters = new AtomicInteger();
-        StringBuilder order = new StringBuilder();
-        var deleter = new Thread(() -> {
-            var writeLock = lock.forDelete(sharedPath);
-            try {
-                writeLock.lockInterruptibly();
-                concurrentWriters.incrementAndGet();
-                Thread.sleep(WAIT_THRESHOLD);
-                order.append("d");
-            } catch (InterruptedException e) {
-                fail(e);
-            } finally {
-                var count = concurrentWriters.decrementAndGet();
-                if (count > 0)
-                    fail("Some other writer works concurrently");
-                writeLock.unlock();
-            }
-        });
+        var p1 = mock(Path.class);
+        var p2 = mock(Path.class);
+        assertNotEquals(p1, p2);
 
         // when
-        var moveLock = lock.forMove(sharedPath, mock(Path.class), false);
-        deleter.start();
-        while (concurrentWriters.get() < 1) // wait until deleter gets lock
-            Thread.onSpinWait();
-
-        moveLock.lockInterruptibly();
-        var count = concurrentWriters.incrementAndGet();
-        if(count > 1)
-            fail("Some other writer works concurrently");
-        order.append("m");
-        moveLock.unlock();
-        deleter.join();
+        var l1 = locker.onPath(p1);
+        var l2 = locker.onPath(p2);
 
         // then
-        assertEquals("dm", order.toString());
+        assertNotEquals(l1, l2);
     }
 
     @Test
-    void writerWaitsReader() throws InterruptedException {
+    void readWriteLocksFromOneRwLockOnOnePath() {
         // given
-        final Path sharedPath = mock(Path.class);
-        AtomicBoolean readerFlag = new AtomicBoolean();
-        StringBuilder order = new StringBuilder();
-        var reader = new Thread(() -> {
-            var readLock = lock.forRead(sharedPath);
-            try {
-                readLock.lockInterruptibly();
-                readerFlag.set(true);
-                Thread.sleep(WAIT_THRESHOLD);
-                order.append("r");
-            } catch (InterruptedException e) {
-                fail(e);
-            } finally {
-                readLock.unlock();
-            }
-        });
-        var writeLock = lock.forDelete(sharedPath);
+        var path = mock(Path.class);
+        var rwLock = locker.onPath(path);
 
         // when
-        reader.start();
-        while (!readerFlag.get()) // wait until reader gets lock
-            Thread.onSpinWait();
-        writeLock.lockInterruptibly();
-        order.append("w");
-        writeLock.unlock();
-        reader.join();
+        var readLock = locker.forRead(path);
+        var writeLock = locker.forWrite(path);
 
         // then
-        assertEquals("rw", order.toString());
-    }
-
-    @Test
-    void readerWaitsWriter() throws InterruptedException {
-        // given
-        final Path sharedPath = mock(Path.class);
-        AtomicBoolean readerFlag = new AtomicBoolean();
-        StringBuilder out = new StringBuilder();
-        var reader = new Thread(() -> {
-            var readLock = lock.forDelete(sharedPath);
-            try {
-                readLock.lockInterruptibly();
-                readerFlag.set(true);
-                Thread.sleep(WAIT_THRESHOLD);
-                out.append("w");
-            } catch (InterruptedException e) {
-                fail(e);
-            } finally {
-                readLock.unlock();
-            }
-        });
-        var writeLock = lock.forRead(sharedPath);
-
-        // when
-        reader.start();
-        while (!readerFlag.get()) // wait until writer gets lock
-            Thread.onSpinWait();
-        writeLock.lockInterruptibly();
-        out.append("r");
-        writeLock.unlock();
-        reader.join();
-
-        // then
-        assertEquals("wr", out.toString());
+        assertEquals(rwLock.readLock(), readLock);
+        assertEquals(rwLock.writeLock(), writeLock);
     }
 }

@@ -1,6 +1,6 @@
 package net.vanderkast.fs4r.service.core_impl;
 
-import net.vanderkast.fs4r.lock.Logger;
+import net.vanderkast.fs4r.concurrent.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;

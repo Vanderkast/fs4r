@@ -1,17 +1,15 @@
 package net.vanderkast.fs4r.dto;
 
-import net.vanderkast.fs4r.domain.Move;
-
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class MoveDto implements Move.Dto {
+public class MoveDtoImpl implements net.vanderkast.fs4r.domain.dto.MoveDto {
     private final Path origin;
     private final Path target;
     private final boolean copy;
     private final boolean failOnTargetExists;
 
-    public MoveDto(Path origin, Path target, boolean copy, boolean failOnTargetExists) {
+    public MoveDtoImpl(Path origin, Path target, boolean copy, boolean failOnTargetExists) {
         assert origin != null;
         assert target != null;
 
@@ -25,11 +23,11 @@ public class MoveDto implements Move.Dto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MoveDto moveDto = (MoveDto) o;
-        return copy == moveDto.copy
-                && failOnTargetExists == moveDto.failOnTargetExists
-                && origin.equals(moveDto.origin)
-                && target.equals(moveDto.target);
+        MoveDtoImpl moveDtoImpl = (MoveDtoImpl) o;
+        return copy == moveDtoImpl.copy
+                && failOnTargetExists == moveDtoImpl.failOnTargetExists
+                && origin.equals(moveDtoImpl.origin)
+                && target.equals(moveDtoImpl.target);
     }
 
     @Override
