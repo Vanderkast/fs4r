@@ -1,6 +1,6 @@
 package net.vanderkast.fs4r.service.delivery;
 
-import net.vanderkast.fs4r.domain.Read;
+import net.vanderkast.fs4r.domain.Walk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +14,18 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("api/v1/test")
 public class Fs4rDelivery {
-    private final Read read;
+    private final Walk walk;
 
     @Autowired
-    public Fs4rDelivery(Read read) {
-        this.read = read;
+    public Fs4rDelivery(Walk walk) {
+        this.walk = walk;
     }
 
     @GetMapping("/dir/{*path}")
     @ResponseBody
     public ResponseEntity<Stream<String>> readDirectory(@PathVariable String path) {
         try {
-            return ResponseEntity.of(read.readContains(Path.of(path)).map(s -> s.map(Path::getFileName).map(Path::toString)));
+            return ResponseEntity.ok(walk.walkDir(Path.of(path)).map(Path::getFileName).map(Path::toString));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An I/O Exception occur!", e);
         }

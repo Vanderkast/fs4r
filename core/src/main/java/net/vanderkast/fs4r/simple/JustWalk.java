@@ -1,16 +1,14 @@
 package net.vanderkast.fs4r.simple;
 
-import net.vanderkast.fs4r.domain.Read;
+import net.vanderkast.fs4r.domain.Walk;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-public class JustRead implements Read {
+public class JustWalk implements Walk {
     /**
-     * <p>Does not throws IOException if passed path does not exist. Returns Optional#empty instead.</p>
      * <p>Because Files#list method returns lazy populated Stream,
      * removed from listed directory file during listing will be not handled.
      * You can observe it in JustReadTest#removeFileDuringListing test.</p>
@@ -19,9 +17,7 @@ public class JustRead implements Read {
      * @throws IOException if I/O exception occurs
      */
     @Override
-    public Optional<Stream<Path>> readContains(Path dir) throws IOException {
-        if (Files.isDirectory(dir))
-            return Optional.of(Files.list(dir));
-        return Optional.empty();
+    public Stream<Path> walkDir(Path dir) throws IOException {
+        return Files.list(dir);
     }
 }

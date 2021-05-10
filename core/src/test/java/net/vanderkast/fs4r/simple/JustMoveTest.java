@@ -1,7 +1,7 @@
 package net.vanderkast.fs4r.simple;
 
 import net.vanderkast.fs4r.domain.Move;
-import net.vanderkast.fs4r.dto.MoveDto;
+import net.vanderkast.fs4r.dto.MoveDtoImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,7 +23,7 @@ class JustMoveTest {
 
         // when
         try {
-            move.move(new MoveDto(origin, target, false, false));
+            move.move(new MoveDtoImpl(origin, target, false, false));
             fail();
         } catch (IOException e) {
             // then
@@ -42,7 +42,7 @@ class JustMoveTest {
 
         // when
         try {
-            move.move(new MoveDto(origin, target, true, true));
+            move.move(new MoveDtoImpl(origin, target, true, true));
         } catch (IOException e) {
             // then
             caught = true;
@@ -60,7 +60,7 @@ class JustMoveTest {
         assertTrue(Files.exists(target));
 
         // when
-        move.move(new MoveDto(origin, target, true, false));
+        move.move(new MoveDtoImpl(origin, target, true, false));
 
         // then
         assertTrue(Files.exists(origin));
@@ -76,7 +76,7 @@ class JustMoveTest {
         assertFalse(Files.exists(target));
 
         // when
-        move.move(new MoveDto(origin, target, true, true));
+        move.move(new MoveDtoImpl(origin, target, true, true));
 
         // then
         assertTrue(Files.exists(origin));
@@ -92,7 +92,7 @@ class JustMoveTest {
         assertFalse(Files.exists(target));
 
         // when
-        move.move(new MoveDto(origin, target, false, true));
+        move.move(new MoveDtoImpl(origin, target, false, true));
 
         // then
         assertFalse(Files.exists(origin));
@@ -108,7 +108,7 @@ class JustMoveTest {
         assertTrue(Files.exists(target));
 
         // when
-        move.move(new MoveDto(origin, target, false, false));
+        move.move(new MoveDtoImpl(origin, target, false, false));
 
         // then
         assertFalse(Files.exists(origin));
@@ -126,7 +126,7 @@ class JustMoveTest {
 
         // when
         try {
-            move.move(new MoveDto(origin, target, false, true));
+            move.move(new MoveDtoImpl(origin, target, false, true));
         } catch (IOException e) {
             // then
             caught = true;

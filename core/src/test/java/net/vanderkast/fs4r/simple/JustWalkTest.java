@@ -1,20 +1,21 @@
 package net.vanderkast.fs4r.simple;
 
-import net.vanderkast.fs4r.domain.Read;
+import net.vanderkast.fs4r.domain.Walk;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-class JustReadTest {
-    private final Read read = new JustRead();
+class JustWalkTest {
+    private final Walk walk = new JustWalk();
 
     @Test
     void readThatJustCreated(@TempDir Path tmp) throws IOException {
@@ -30,8 +31,7 @@ class JustReadTest {
         }
 
         // when
-        var actual = read.readContains(tmp)
-                .orElseThrow()
+        var actual = walk.walkDir(tmp)
                 .collect(Collectors.toList());
 
         // then
@@ -46,12 +46,18 @@ class JustReadTest {
         // given
         var file = Files.createFile(tmp.resolve("file"));
         assertTrue(Files.exists(file));
+        boolean notDirectory;
 
         // when
-        var data = read.readContains(file);
+        try {
+            walk.walkDir(file);
+            notDirectory = false;
+        } catch (NotDirectoryException e) {
+            notDirectory = true;
+        }
 
         // then
-        assertTrue(data.isEmpty());
+        assertTrue(notDirectory);
     }
 
     @Test
@@ -65,7 +71,7 @@ class JustReadTest {
             assertTrue(Files.exists(p));
 
         // when
-        var stream = read.readContains(tmp).orElseThrow();
+        var stream = walk.walkDir(tmp);
 
         // then
         AtomicInteger handledCount = new AtomicInteger(0);
@@ -83,11 +89,17 @@ class JustReadTest {
         // given
         var path = tmp.resolve("some_file_that_not_exist");
         assertTrue(Files.notExists(path));
+        boolean noSuchFileCaught;
 
         // when
-        var result = read.readContains(path);
+        try {
+            walk.walkDir(path);
+            noSuchFileCaught = false;
+        } catch (NoSuchFileException e) {
+            noSuchFileCaught = true;
+        }
 
         // then
-        assertTrue(result.isEmpty());
+        assertTrue(noSuchFileCaught);
     }
 }
