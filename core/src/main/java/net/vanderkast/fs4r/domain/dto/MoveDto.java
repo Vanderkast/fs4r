@@ -9,5 +9,5 @@ public interface MoveDto {
 
     boolean isCopy();
 
-    boolean isFailOnTargetExists();
+    boolean isFailOnTargetExist();
 }

@@ -24,6 +24,11 @@ dependencies {
 
     def SPRING_BOOT = '2.4.5'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: SPRING_BOOT
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: SPRING_BOOT
+
+    def LOMBOK = '1.18.20'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: LOMBOK
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: LOMBOK
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: SPRING_BOOT
 }

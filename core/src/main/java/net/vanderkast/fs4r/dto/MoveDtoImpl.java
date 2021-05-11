@@ -7,16 +7,16 @@ public class MoveDtoImpl implements net.vanderkast.fs4r.domain.dto.MoveDto {
     private final Path origin;
     private final Path target;
     private final boolean copy;
-    private final boolean failOnTargetExists;
+    private final boolean failOnTargetExist;
 
-    public MoveDtoImpl(Path origin, Path target, boolean copy, boolean failOnTargetExists) {
+    public MoveDtoImpl(Path origin, Path target, boolean copy, boolean failOnTargetExist) {
         assert origin != null;
         assert target != null;
 
         this.origin = origin;
         this.target = target;
         this.copy = copy;
-        this.failOnTargetExists = failOnTargetExists;
+        this.failOnTargetExist = failOnTargetExist;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class MoveDtoImpl implements net.vanderkast.fs4r.domain.dto.MoveDto {
         if (o == null || getClass() != o.getClass()) return false;
         MoveDtoImpl moveDtoImpl = (MoveDtoImpl) o;
         return copy == moveDtoImpl.copy
-                && failOnTargetExists == moveDtoImpl.failOnTargetExists
+                && failOnTargetExist == moveDtoImpl.failOnTargetExist
                 && origin.equals(moveDtoImpl.origin)
                 && target.equals(moveDtoImpl.target);
     }
@@ -51,7 +51,7 @@ public class MoveDtoImpl implements net.vanderkast.fs4r.domain.dto.MoveDto {
     }
 
     @Override
-    public boolean isFailOnTargetExists() {
-        return failOnTargetExists;
+    public boolean isFailOnTargetExist() {
+        return failOnTargetExist;
     }
 }
