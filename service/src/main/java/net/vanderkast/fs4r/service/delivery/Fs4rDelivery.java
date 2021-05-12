@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("api/v1/test")
 @Profile("test")
-public class Fs4rDelivery extends Delivery {
+public class Fs4rDelivery extends Delivery { // todo write e2e tests
     private final Walk walk;
     private final Delete delete;
     private final Move move;
@@ -49,7 +49,7 @@ public class Fs4rDelivery extends Delivery {
 
     @GetMapping(value = "/load/{*path}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<Resource> load(@PathVariable String path) {
+    public ResponseEntity<Resource> load(@PathVariable String path) { // todo need ?normal? implementation
         try {
             return ResponseEntity.ok(new FileUrlResource(fromServiceRoot(path).toUri().toURL()));
         } catch (MalformedURLException e) {

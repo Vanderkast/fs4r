@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 class LockedMoveTest {
     private final PathLock pathLock = mock(PathLock.class);
     private final Move io = mock(Move.class);
-    private final LockedMove lockedMove = new LockedMove(pathLock, io);
+    private final LockedMove lockedMove = new LockedMove(io, pathLock);
 
     @Test
     void deadlockOnInterruptibly() throws IOException, InterruptedException {

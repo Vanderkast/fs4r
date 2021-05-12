@@ -8,11 +8,11 @@ import net.vanderkast.fs4r.domain.dto.MoveDto;
 import java.io.IOException;
 import java.util.Optional;
 
-public class LockedMove implements ConcurrentMove {
+public class LockedMove implements ConcurrentMove { // todo segregate origin lock and target lock
     private final PathLock pathLock;
     private final Move move;
 
-    public LockedMove(PathLock pathLock, Move move) {
+    public LockedMove(Move move, PathLock pathLock) {
         this.pathLock = pathLock;
         this.move = move;
     }

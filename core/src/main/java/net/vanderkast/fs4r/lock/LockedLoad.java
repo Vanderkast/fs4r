@@ -12,7 +12,7 @@ public class LockedLoad extends LockedIo<Path, InputStream> implements Concurren
     private final PathLock pathLock;
     private final Load load;
 
-    public LockedLoad(PathLock pathLock, Load load) {
+    public LockedLoad(Load load, PathLock pathLock) {
         this.pathLock = pathLock;
         this.load = load;
     }

@@ -3,7 +3,7 @@
     {
       "name": "fs4r.root-dir",
       "type": "java.lang.String",
-      "description": "Directory that is used as virtual root for service. All passed paths are relative to root-dir. If not specified uses System's root dir."
+      "description": "Directory that is used as virtual root. All passed paths are relative to root-dir. If not specified uses System's root dir."
     }
   ]
 }
