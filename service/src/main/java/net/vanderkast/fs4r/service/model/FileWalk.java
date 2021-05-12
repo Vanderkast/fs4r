@@ -1,5 +1,6 @@
 package net.vanderkast.fs4r.service.model;
 
+
 import lombok.Getter;
 
 import java.io.File;
