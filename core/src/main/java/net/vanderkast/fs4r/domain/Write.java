@@ -1,6 +1,6 @@
 package net.vanderkast.fs4r.domain;
 
-import net.vanderkast.fs4r.domain.dto.WriteDto;
+import net.vanderkast.fs4r.dto.WriteDto;
 
 import java.io.IOException;
 

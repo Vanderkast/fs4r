@@ -1,9 +1,11 @@
-package net.vanderkast.fs4r.dto;
+package net.vanderkast.fs4r.dto.impl;
+
+import net.vanderkast.fs4r.dto.MoveDto;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class MoveDtoImpl implements net.vanderkast.fs4r.domain.dto.MoveDto {
+public class MoveDtoImpl implements MoveDto {
     private final Path origin;
     private final Path target;
     private final boolean copy;

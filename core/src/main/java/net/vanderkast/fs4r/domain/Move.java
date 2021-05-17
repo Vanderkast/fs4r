@@ -1,6 +1,6 @@
 package net.vanderkast.fs4r.domain;
 
-import net.vanderkast.fs4r.domain.dto.MoveDto;
+import net.vanderkast.fs4r.dto.MoveDto;
 
 import java.io.IOException;
 

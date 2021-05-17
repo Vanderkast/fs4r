@@ -2,7 +2,6 @@ package net.vanderkast.fs4r.service.model;
 
 import lombok.Getter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +28,7 @@ public class FileWalk {
                     attributes.creationTime().toMillis(),
                     attributes.lastModifiedTime().toMillis());
         } catch (IOException e) {
-            return new FileWalk(file.getName(), file.isDirectory());
+            return new FileErr(file.getName(), file.isDirectory(), "Can't read file info");
         }
     }
 
@@ -44,6 +43,15 @@ public class FileWalk {
             this.size = size;
             this.created = created;
             this.lastTimeModified = lastTimeModified;
+        }
+    }
+
+    public static class FileErr extends FileWalk {
+        private final String error;
+
+        public FileErr(String name, boolean dir, String error) {
+            super(name, dir);
+            this.error = error;
         }
     }
 }

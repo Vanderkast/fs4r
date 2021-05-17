@@ -7,6 +7,11 @@ A [DSR](https://ru.dsr-corporation.com/) practise project.
 This project is a server application that provides file system and operations over it. Basically its RMCD _(Read, Move,
 Copy, Delete)_ service for files and directories.
 
+#### Structure
+Project is separated on `core` and `service` modules:
+- `core` - implements main operations over paths (files and directories). Additional feature is `ConcurrentIo` that provides interaction with program-wide concurrency.
+- `service` - spring based RESTlike service. Extends `core` module with `virtual_fs` package provides encapsulation of server file system via publish specific paths.  
+
 ### How to start
 
 1. Clone project code sources into some directory (for example let it be `your_fs4r_dir`).
@@ -30,20 +35,13 @@ Copy, Delete)_ service for files and directories.
 
 ### Run configuration
 
-#### Run profiles
-
-Service supports run profiles via passing `spring.profiles.active` property:
-
-- `test` - provides no auth endpoints
-
 #### Application properties
 
 Service supports Spring properties (`server.port`, `logging.level`, etc.).
 
 #### Service specific application properties
 
-- `fs4r.root-dir` - service publish path. Used as _virtual_ root directory. Uses system's root if property not
-  specified.
+- `fs4r.publish-dirs` - service publish paths. If passed more than one path, service creates _virtual_ root directory that wraps published files.
 
 ### Contributors
 

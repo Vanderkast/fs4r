@@ -3,7 +3,7 @@ package net.vanderkast.fs4r.lock;
 import net.vanderkast.fs4r.domain.Write;
 import net.vanderkast.fs4r.domain.concurrent.ConcurrentWrite;
 import net.vanderkast.fs4r.domain.concurrent.VoidOk;
-import net.vanderkast.fs4r.domain.dto.WriteDto;
+import net.vanderkast.fs4r.dto.WriteDto;
 
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
@@ -12,7 +12,7 @@ public class LockedWrite extends LockedIo<WriteDto, VoidOk> implements Concurren
     private final PathLock pathLock;
     private final Write write;
 
-    public LockedWrite(PathLock pathLock, Write write) {
+    public LockedWrite(Write write, PathLock pathLock) {
         this.pathLock = pathLock;
         this.write = write;
     }

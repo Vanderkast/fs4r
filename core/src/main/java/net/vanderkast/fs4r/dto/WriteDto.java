@@ -1,4 +1,4 @@
-package net.vanderkast.fs4r.domain.dto;
+package net.vanderkast.fs4r.dto;
 
 import java.io.InputStream;
 import java.nio.file.Path;

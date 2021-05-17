@@ -1,8 +1,7 @@
 package net.vanderkast.fs4r.simple;
 
 import net.vanderkast.fs4r.domain.Write;
-import net.vanderkast.fs4r.domain.dto.WriteDto;
-import net.vanderkast.fs4r.dto.WriteDtoImpl;
+import net.vanderkast.fs4r.dto.impl.WriteDtoImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
