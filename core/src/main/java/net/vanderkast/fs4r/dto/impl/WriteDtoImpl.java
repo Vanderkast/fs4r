@@ -1,9 +1,11 @@
-package net.vanderkast.fs4r.dto;
+package net.vanderkast.fs4r.dto.impl;
+
+import net.vanderkast.fs4r.dto.WriteDto;
 
 import java.io.InputStream;
 import java.nio.file.Path;
 
-public class WriteDtoImpl implements net.vanderkast.fs4r.domain.dto.WriteDto {
+public class WriteDtoImpl implements WriteDto {
     private final Path path;
     private final InputStream   inputStream;
     private final boolean overwrite;

@@ -1,7 +1,15 @@
 package net.vanderkast.fs4r.service.configuration;
 
-import java.nio.file.Path;
+import net.vanderkast.fs4r.domain.*;
 
 public interface ServiceConfiguration {
-    Path getServiceRootPath();
+    Walk walk();
+
+    Load load();
+
+    Delete delete();
+
+    Move move();
+
+    Write write();
 }

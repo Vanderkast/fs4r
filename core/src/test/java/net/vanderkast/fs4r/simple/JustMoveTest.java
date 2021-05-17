@@ -1,7 +1,7 @@
 package net.vanderkast.fs4r.simple;
 
 import net.vanderkast.fs4r.domain.Move;
-import net.vanderkast.fs4r.dto.MoveDtoImpl;
+import net.vanderkast.fs4r.dto.impl.MoveDtoImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

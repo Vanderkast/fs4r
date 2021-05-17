@@ -1,7 +1,7 @@
 package net.vanderkast.fs4r.simple;
 
 import net.vanderkast.fs4r.domain.Write;
-import net.vanderkast.fs4r.domain.dto.WriteDto;
+import net.vanderkast.fs4r.dto.WriteDto;
 
 import java.io.IOException;
 import java.nio.file.Files;

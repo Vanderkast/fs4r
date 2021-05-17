@@ -3,18 +3,26 @@ package net.vanderkast.fs4r.lock;
 import net.vanderkast.fs4r.domain.Move;
 import net.vanderkast.fs4r.domain.concurrent.ConcurrentMove;
 import net.vanderkast.fs4r.domain.concurrent.VoidOk;
-import net.vanderkast.fs4r.domain.dto.MoveDto;
+import net.vanderkast.fs4r.dto.MoveDto;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 
-public class LockedMove implements ConcurrentMove { // todo segregate origin lock and target lock
-    private final PathLock pathLock;
+/**
+ * <p>Move operation that uses {@link PathLock} to provide synchronization on Paths.</p>
+ * <p>{@link LockedMove#readLock} is used to support concurrency on copy origin file operations.</p>
+ * <p>In case origin path equals to target, concurrent methods just returns {@link VoidOk#OK} to prevent deadlock if {@link java.util.concurrent.locks.ReadWriteLock} is used</p>
+ */
+public class LockedMove implements ConcurrentMove {
+    private final PathLock readLock;
+    private final PathLock editLock;
     private final Move move;
 
-    public LockedMove(Move move, PathLock pathLock) {
-        this.pathLock = pathLock;
+    public LockedMove(Move move, PathLock readLock, PathLock editLock) {
+        this.readLock = readLock;
         this.move = move;
+        this.editLock = editLock;
     }
 
     @Override
@@ -24,32 +32,65 @@ public class LockedMove implements ConcurrentMove { // todo segregate origin loc
 
     @Override
     public VoidOk interruptibly(MoveDto dto) throws IOException, InterruptedException {
-        var originHigher = dto.getOrigin().compareTo(dto.getTarget());
-        var from = pathLock.on(originHigher <= 0 ? dto.getOrigin() : dto.getTarget());
-        var to = pathLock.on(originHigher <= 0 ? dto.getTarget() : dto.getOrigin());
+        if(dto.getOrigin().equals(dto.getTarget()))
+            return VoidOk.OK;
+        var lock = computePathLocks(dto);
         try {
-            from.lockInterruptibly();
-            to.lockInterruptibly();
+            lock.lockInterruptibly();
             move.move(dto);
-        }finally {
-            to.unlock();
-            from.unlock();
+        } finally {
+            lock.unlock();
         }
         return VoidOk.OK;
     }
 
     @Override
     public Optional<VoidOk> tryNow(MoveDto dto) throws IOException {
-        var originHigher = dto.getOrigin().compareTo(dto.getTarget());
-        var from = pathLock.on(originHigher <= 0 ? dto.getOrigin() : dto.getTarget());
-        var to = pathLock.on(originHigher <= 0 ? dto.getTarget() : dto.getOrigin());
+        if(dto.getOrigin().equals(dto.getTarget()))
+            return Optional.of(VoidOk.OK);
+        var lock = computePathLocks(dto);
         try {
-            if(from.tryLock() && to.tryLock())
+            if (lock.tryLock())
                 move.move(dto);
         } finally {
-            to.unlock();
-            from.unlock();
+            lock.unlock();
         }
         return Optional.of(VoidOk.OK);
+    }
+
+    private FirstSecondLock computePathLocks(MoveDto dto) {
+        var origin = dto.getOrigin();
+        var target = dto.getTarget();
+
+        Lock originLock = dto.isCopy() ? readLock.on(dto.getOrigin()) : editLock.on(dto.getOrigin());
+        Lock targetLock = editLock.on(dto.getTarget());
+
+        if (origin.compareTo(target) <= 0)
+            return new FirstSecondLock(originLock, targetLock);
+        return new FirstSecondLock(targetLock, originLock);
+    }
+
+    static class FirstSecondLock {
+        private final Lock first;
+        private final Lock second;
+
+        FirstSecondLock(Lock first, Lock second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        void lockInterruptibly() throws InterruptedException {
+            first.lockInterruptibly();
+            second.lockInterruptibly();
+        }
+
+        boolean tryLock() {
+            return first.tryLock() && second.tryLock();
+        }
+
+        void unlock() {
+            second.unlock();
+            first.unlock();
+        }
     }
 }

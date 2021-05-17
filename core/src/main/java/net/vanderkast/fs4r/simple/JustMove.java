@@ -1,7 +1,7 @@
 package net.vanderkast.fs4r.simple;
 
 import net.vanderkast.fs4r.domain.Move;
-import net.vanderkast.fs4r.domain.dto.MoveDto;
+import net.vanderkast.fs4r.dto.MoveDto;
 
 import java.io.IOException;
 import java.nio.file.Files;
