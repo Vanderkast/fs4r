@@ -42,6 +42,7 @@ Service supports Spring properties (`server.port`, `logging.level`, etc.).
 #### Service specific application properties
 
 - `fs4r.publish-dirs` - service publish paths. If passed more than one path, service creates _virtual_ root directory that wraps published files.
+- `fs4r.web.allowed-origins` - specifies origins allowed interacting with service. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 
 ### Contributors
 
