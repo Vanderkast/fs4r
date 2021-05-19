@@ -21,10 +21,10 @@ public class ChronoUserPathLockImpl implements ChronoUserPathLock {
     @Override
     public boolean tryLock(User user, Path path, long forMillis) {
         var holder = pathLocks.get(path);
-        if (holder == null || holder.isExpired()) {
+        if (holder == null || holder.isExpired() || user.equals(holder.getUser())) {
             synchronized (this) {
                 var dcHolder = pathLocks.get(path);
-                if (dcHolder == null || dcHolder.isExpired()) {
+                if (dcHolder == null || dcHolder.isExpired() || user.equals(dcHolder.getUser())) {
                     pathLocks.put(path, new LockHolder(user, forMillis));
                     return true;
                 }

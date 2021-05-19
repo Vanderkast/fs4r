@@ -48,6 +48,24 @@ class ChronoUserPathLockImplTest {
     }
 
     @Test
+    void holderUpdates() throws InterruptedException {
+        // given
+        var holder = mock(User.class);
+        var path = mock(Path.class);
+        var spy = mock(User.class);
+        assertTrue(lock.tryLock(holder, path, 10));
+        assertFalse(lock.tryLock(spy, path));
+
+        // when
+        assertTrue(lock.tryLock(holder, path, 20));
+        Thread.sleep(10);
+
+        // then
+        assertFalse(lock.tryLock(spy, path));
+        assertTrue(lock.tryLock(holder, path));
+    }
+
+    @Test
     void expires() throws InterruptedException {
         // given
         var first = mock(User.class);

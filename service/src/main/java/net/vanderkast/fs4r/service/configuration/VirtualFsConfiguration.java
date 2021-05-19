@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +33,7 @@ public class VirtualFsConfiguration extends FsConfiguration implements ServiceCo
             this.publishedPaths = Stream.of(publishPaths).map(Path::of).collect(Collectors.toList());
         }
 
-        logger.info("Service publish directory:\n" + "{}\n".repeat(this.publishedPaths.size()),
-                this.publishedPaths.toArray());
+        logger.info("Service publishes directories: {}", Arrays.toString(publishPaths));
 
     }
 
