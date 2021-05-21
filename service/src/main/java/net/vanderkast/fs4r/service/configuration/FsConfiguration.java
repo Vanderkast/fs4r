@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 
 @ConfigurationProperties(prefix = "fs4r")
 public abstract class FsConfiguration implements ServiceConfiguration {
-    protected final ReadWritePathLock pathLock = new ReadWritePathLock();
+    protected final ReadWritePathLockImpl pathLock = new ReadWritePathLockImpl();
 
     @Override
     @Bean

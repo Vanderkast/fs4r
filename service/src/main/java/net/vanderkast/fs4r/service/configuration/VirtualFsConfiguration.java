@@ -2,9 +2,9 @@ package net.vanderkast.fs4r.service.configuration;
 
 import net.vanderkast.fs4r.domain.Walk;
 import net.vanderkast.fs4r.domain.concurrent.*;
-import net.vanderkast.fs4r.service.controller.AttachmentLoad;
-import net.vanderkast.fs4r.service.controller.ServletVirtualAttachmentLoad;
-import net.vanderkast.fs4r.service.virtual_fs.*;
+import net.vanderkast.fs4r.service.fs.attachment.AttachmentLoad;
+import net.vanderkast.fs4r.service.fs.attachment.ServletVirtualAttachmentLoad;
+import net.vanderkast.fs4r.service.fs.virtual.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
