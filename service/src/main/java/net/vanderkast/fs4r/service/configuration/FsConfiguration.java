@@ -1,6 +1,7 @@
 package net.vanderkast.fs4r.service.configuration;
 
 import net.vanderkast.fs4r.domain.concurrent.*;
+import net.vanderkast.fs4r.extention.content.ConcurrentContentRead;
 import net.vanderkast.fs4r.lock.*;
 import net.vanderkast.fs4r.simple.*;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,5 +45,12 @@ public abstract class FsConfiguration implements ServiceConfiguration {
     @Qualifier("core")
     public ConcurrentWrite write() {
         return new LockedWrite(new JustWrite(), pathLock::forWrite);
+    }
+
+    @Override
+    @Bean
+    @Qualifier("core")
+    public ConcurrentContentRead contentRead() {
+        return new LockedContentRead(new JustContentRead(), pathLock::forRead);
     }
 }

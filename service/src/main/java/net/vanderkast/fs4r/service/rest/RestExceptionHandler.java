@@ -1,5 +1,7 @@
-package net.vanderkast.fs4r.service.service;
+package net.vanderkast.fs4r.service.rest;
 
+import net.vanderkast.fs4r.service.fs.file_size.FileSizeLimitExceededException;
+import net.vanderkast.fs4r.service.service.ResourceBusyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,6 +34,11 @@ public class RestExceptionHandler {
     @ExceptionHandler(FileAlreadyExistsException.class)
     public ResponseEntity<String> fileAlreadyExistsException(FileAlreadyExistsException e) {
         return ResponseEntity.badRequest().body("File already exists. " + e.getMessage());
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<String> fileAlreadyExistsException(FileSizeLimitExceededException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler

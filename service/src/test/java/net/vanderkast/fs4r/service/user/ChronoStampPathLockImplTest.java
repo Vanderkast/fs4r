@@ -2,6 +2,7 @@ package net.vanderkast.fs4r.service.user;
 
 import net.vanderkast.fs4r.service.fs.stamp_lock.ChronoStampPathLock;
 import net.vanderkast.fs4r.service.fs.stamp_lock.ChronoStampPathLockImpl;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -11,77 +12,84 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class ChronoStampPathLockImplTest {
+class ChronoStampPathLockImplTest { // todo rewrite for rw logic
     private final ChronoStampPathLock<UUID> lock = new ChronoStampPathLockImpl<>();
 
     @Test
     void exclusiveness() {
         // given
-        var first = UUID.randomUUID();
-        var path = mock(Path.class);
-        var firstHolds = lock.tryConcurrent(first, path);
-        assertTrue(firstHolds);
-        var second = UUID.randomUUID();
+        var owner = UUID.randomUUID();
+        var sharedResource = mock(Path.class);
+        var traitor = UUID.randomUUID();
 
         // when
-        var secondHolds = lock.tryConcurrent(second, path);
+        assertTrue(lock.tryExclusive(owner, sharedResource, 4000));
+
         // then
-        assertFalse(secondHolds);
+        assertFalse(lock.tryConcurrent(traitor, sharedResource, 300));
+        assertFalse(lock.tryExclusive(traitor, sharedResource, 300));
     }
 
     @Test
-    void onlyHolderMayUnlock() {
+    void oneOwnerManyLocks() {
         // given
-        var first = UUID.randomUUID();
-        var path = mock(Path.class);
-        var firstHolds = lock.tryConcurrent(first, path);
-        assertTrue(firstHolds);
-        var second = UUID.randomUUID();
+        var owner = UUID.randomUUID();
+        var sharedResource = mock(Path.class);
 
         // when
-        lock.unlock(second, path);
-        // then
-        assertFalse(lock.tryConcurrent(second, path));
-        assertTrue(lock.tryConcurrent(first, path));
-
-        // when
-        lock.unlock(first, path);
+        var firstLocked = lock.tryExclusive(owner, sharedResource, 300);
+        var secondLocked = lock.tryConcurrent(owner, sharedResource, 400);
 
         // then
-        assertTrue(lock.tryConcurrent(second, path));
+        assertTrue(firstLocked);
+        assertTrue(secondLocked);
     }
 
     @Test
-    void holderUpdates() throws InterruptedException {
+    void concurrent() {
         // given
-        var holder = UUID.randomUUID();
-        var path = mock(Path.class);
-        var spy = UUID.randomUUID();
-        assertTrue(lock.tryExclusive(holder, path, 10));
-        assertFalse(lock.tryConcurrent(spy, path));
+        var firstConcurrent = UUID.randomUUID();
+        var secondConcurrent = UUID.randomUUID();
+        var exclusive = UUID.randomUUID();
+        var sharedResource = mock(Path.class);
 
         // when
-        assertTrue(lock.tryExclusive(holder, path, 20));
-        Thread.sleep(10);
+        assertTrue(lock.tryConcurrent(firstConcurrent, sharedResource, 400));
+        assertTrue(lock.tryConcurrent(secondConcurrent, sharedResource, 400));
 
         // then
-        assertFalse(lock.tryConcurrent(spy, path));
-        assertTrue(lock.tryConcurrent(holder, path));
+        assertFalse(lock.tryExclusive(exclusive, sharedResource, 200));
     }
 
     @Test
-    void expires() throws InterruptedException {
+    void expire() throws InterruptedException {
         // given
-        var first = UUID.randomUUID();
-        var path = mock(Path.class);
-        var firstHolds = lock.tryExclusive(first, path, 10);
-        assertTrue(firstHolds);
-        var second = UUID.randomUUID();
+        var sharedResource = mock(Path.class);
+        var concurrent = UUID.randomUUID();
 
         // when
+        assertTrue(lock.tryExclusive(UUID.randomUUID(), sharedResource, 10));
+        assertFalse(lock.tryConcurrent(concurrent, sharedResource));
         Thread.sleep(11);
 
         // then
-        assertTrue(lock.tryConcurrent(second, path));
+        assertTrue(lock.tryConcurrent(concurrent, sharedResource));
+    }
+
+    @Test
+    void prolong() throws InterruptedException {
+        // given
+        var resource = mock(Path.class);
+        var owner = UUID.randomUUID();
+
+        // when
+        assertTrue(lock.tryConcurrent(owner, resource, 5));
+        assertFalse(lock.tryExclusive(UUID.randomUUID(), resource, 5));
+        assertTrue(lock.tryConcurrent(owner, resource, 10));
+
+        Thread.sleep(6);
+
+        // then
+        assertFalse(lock.tryExclusive(UUID.randomUUID(), resource));
     }
 }
