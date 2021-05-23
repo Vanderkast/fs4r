@@ -2,7 +2,9 @@ name: Validation
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - dev
 
 jobs:
   test:
@@ -18,4 +20,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Test by gradle
-        run: ./gradlew test
+        run: ./gradlew check

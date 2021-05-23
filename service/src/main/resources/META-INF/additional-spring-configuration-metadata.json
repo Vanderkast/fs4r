@@ -9,6 +9,11 @@
       "name": "fs4r.web.allowed-origins",
       "type": "java.lang.String[]",
       "description": "Origins that are allowed to interact with service."
+    },
+    {
+      "name": "fs4r.load-files-size-limit",
+      "type": "java.lang.String",
+      "description": "File size limit for loading."
     }
   ]
 }
