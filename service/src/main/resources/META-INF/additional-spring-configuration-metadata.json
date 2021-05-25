@@ -6,7 +6,7 @@
       "description": "Directories those is published via service."
     },
     {
-      "name": "fs4r.web.allowed-origins",
+      "name": "fs4r.web.cors-allowed-origins",
       "type": "java.lang.String[]",
       "description": "Origins that are allowed to interact with service."
     },
