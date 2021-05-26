@@ -2,6 +2,7 @@ package net.vanderkast.fs4r.service.rest;
 
 import net.vanderkast.fs4r.service.fs.stamp_lock.ChronoStampPathLock;
 import net.vanderkast.fs4r.service.model.StampedLock;
+import net.vanderkast.fs4r.service.service.Fs4rStampedMainService;
 import net.vanderkast.fs4r.service.service.ResourceBusyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -17,13 +18,15 @@ import static net.vanderkast.fs4r.service.configuration.Profiles.CONCURRENT_SESS
 @RequestMapping("api/v1/lock")
 @Profile(CONCURRENT_SESSIONS)
 public class StampLockRestController {
-    private static final long MINUTE = 60*1000;
+    private static final long MINUTE = 60 * 1000;
 
     private final ChronoStampPathLock<UUID> stampPathLock;
+    private final Fs4rStampedMainService service;
 
     @Autowired
-    public StampLockRestController(ChronoStampPathLock<UUID> stampPathLock) {
+    public StampLockRestController(ChronoStampPathLock<UUID> stampPathLock, Fs4rStampedMainService service) {
         this.stampPathLock = stampPathLock;
+        this.service = service;
     }
 
     @GetMapping("/exclusive/{*path}")

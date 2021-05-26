@@ -12,13 +12,13 @@ abstract class ChronoLockHolder<T> implements LockHolder<T> {
         this.deadline = deadline;
     }
 
+    public static long deadlineAfter(long millis) {
+        return millis == FOREVER ? FOREVER : System.currentTimeMillis() + millis;
+    }
+
     @Override
     public boolean isInactive() {
         return deadline != FOREVER
                 && deadline < System.currentTimeMillis();
-    }
-
-    public static long deadlineAfter(long millis) {
-        return millis == FOREVER ? FOREVER : System.currentTimeMillis() + millis;
     }
 }

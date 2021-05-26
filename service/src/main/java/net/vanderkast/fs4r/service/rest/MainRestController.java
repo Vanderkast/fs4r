@@ -6,6 +6,7 @@ import net.vanderkast.fs4r.service.model.FileMove;
 import net.vanderkast.fs4r.service.model.FileWalk;
 import net.vanderkast.fs4r.service.service.Fs4rMainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-@RestController
-@RequestMapping(MainRestController.API_PATH)
-public class MainRestController {
-    public static final String API_PATH = "api/v1/main";
+import static net.vanderkast.fs4r.service.configuration.Profiles.NOT_CONCURRENT_SESSIONS;
 
+@RestController
+@RequestMapping("api/v1/main")
+@Profile(NOT_CONCURRENT_SESSIONS)
+public class MainRestController {
     private final Fs4rMainService service;
 
     @Autowired
@@ -43,7 +45,7 @@ public class MainRestController {
     @GetMapping(value = "/load/{*path}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity<String> load(@PathVariable String path) throws IOException {
-        return ResponseEntity.ok(service.load(Path.of(path)));
+        return ResponseEntity.ok(service.read(Path.of(path)));
     }
 
     @PostMapping(value = "/upload/{*path}")

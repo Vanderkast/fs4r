@@ -9,7 +9,7 @@ public interface FileSizeLimitCheck {
     boolean check(Path path) throws IOException;
 
     default void verify(Path path) throws IOException {
-        if(!check(path))
+        if (!check(path))
             throw new FileSizeLimitExceededException(path, getLimit());
     }
 }

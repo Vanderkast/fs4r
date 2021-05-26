@@ -78,7 +78,7 @@ public class MainService implements Fs4rMainService {
     }
 
     @Override
-    public String load(Path virtual) throws IOException {
+    public String read(Path virtual) throws IOException {
         Optional<String> content = contentRead.tryNow(virtual);
         if (content.isEmpty())
             return contentRead.tryNow(virtual).orElseThrow(ResourceBusyException::new);

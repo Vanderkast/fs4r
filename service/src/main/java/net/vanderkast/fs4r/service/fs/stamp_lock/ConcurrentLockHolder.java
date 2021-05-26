@@ -13,10 +13,6 @@ import java.util.Set;
 class ConcurrentLockHolder<T> extends ChronoLockHolder<T> {
     private final Set<T> holders;
 
-    public static <T> ConcurrentLockHolder<T> of(T stamp, long deadline) {
-        return new ConcurrentLockHolder<>(Set.of(stamp), deadline);
-    }
-
     public ConcurrentLockHolder(long deadline) {
         super(deadline);
         holders = new HashSet<>();
@@ -25,6 +21,10 @@ class ConcurrentLockHolder<T> extends ChronoLockHolder<T> {
     public ConcurrentLockHolder(Set<T> holders, long deadline) {
         super(deadline);
         this.holders = new HashSet<>(holders);
+    }
+
+    public static <T> ConcurrentLockHolder<T> of(T stamp, long deadline) {
+        return new ConcurrentLockHolder<>(Set.of(stamp), deadline);
     }
 
     @Override
@@ -56,9 +56,14 @@ class ConcurrentLockHolder<T> extends ChronoLockHolder<T> {
     public LockHolder<T> lock(T stamp, long deadline) {
         if (holders.contains(stamp) && super.deadline > deadline)
             return this;
-        ConcurrentLockHolder<T> holder = new ConcurrentLockHolder<>(holders,
-                deadline == FOREVER ? FOREVER :  Math.max(super.deadline, deadline));
+        ConcurrentLockHolder<T> holder = new ConcurrentLockHolder<>(holders, newDeadline(deadline));
         holder.holders.add(stamp);
         return holder;
+    }
+
+    long newDeadline(long candidate) {
+        if(candidate == FOREVER || deadline == FOREVER)
+            return FOREVER;
+        return Math.max(candidate, deadline);
     }
 }

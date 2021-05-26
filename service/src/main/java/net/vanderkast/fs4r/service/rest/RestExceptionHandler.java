@@ -16,8 +16,15 @@ import java.nio.file.NotDirectoryException;
 @ControllerAdvice
 public class RestExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException e) {
+        if (e.getMessage().contains("UUID"))
+            return ResponseEntity.badRequest().body(e.getMessage());
+        throw new RuntimeException(e);
+    }
+
     @ExceptionHandler(ResourceBusyException.class)
-    public ResponseEntity<String> resourceBusyException(ResourceBusyException e) {
+    public ResponseEntity<String> resourceBusyException(ResourceBusyException ignored) {
         return ResponseEntity.status(HttpStatus.LOCKED).build();
     }
 

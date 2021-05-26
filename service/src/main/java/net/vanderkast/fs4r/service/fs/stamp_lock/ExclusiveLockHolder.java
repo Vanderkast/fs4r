@@ -5,21 +5,21 @@ import org.springframework.lang.Nullable;
 
 @Getter
 public class ExclusiveLockHolder<T> extends ChronoLockHolder<T> {
-    private final T holder;
+    private final T owner;
 
-    public ExclusiveLockHolder(@Nullable T holder, long deadline) {
+    public ExclusiveLockHolder(@Nullable T owner, long deadline) {
         super(deadline);
-        this.holder = holder;
+        this.owner = owner;
     }
 
     @Override
     public boolean isOwner(T stamp) {
-        return !isInactive() && holder.equals(stamp);
+        return !isInactive() && owner.equals(stamp);
     }
 
     @Override
     public boolean isInactive() {
-        return holder == null || super.isInactive();
+        return owner == null || super.isInactive();
     }
 
     @Override
@@ -34,10 +34,12 @@ public class ExclusiveLockHolder<T> extends ChronoLockHolder<T> {
 
     @Override
     public LockHolder<T> lock(T candidate, long deadline) {
-        if (holder != null && holder.equals(candidate))
+        if (owner != null && owner.equals(candidate))
             return new ExclusiveLockHolder<>(candidate, deadline);
-        return isInactive()
-                ? new ExclusiveLockHolder<>(candidate, deadline)
-                : this;
+        if (isInactive())
+            return new ExclusiveLockHolder<>(candidate, deadline);
+        if (this.deadline < deadline)
+            return new ExclusiveLockHolder<>(owner, deadline);
+        return this;
     }
 }

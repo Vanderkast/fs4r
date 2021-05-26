@@ -2,7 +2,6 @@ package net.vanderkast.fs4r.service.user;
 
 import net.vanderkast.fs4r.service.fs.stamp_lock.ChronoStampPathLock;
 import net.vanderkast.fs4r.service.fs.stamp_lock.ChronoStampPathLockImpl;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -54,8 +53,8 @@ class ChronoStampPathLockImplTest { // todo rewrite for rw logic
         var sharedResource = mock(Path.class);
 
         // when
-        assertTrue(lock.tryConcurrent(firstConcurrent, sharedResource, 400));
-        assertTrue(lock.tryConcurrent(secondConcurrent, sharedResource, 400));
+        assertTrue(lock.tryConcurrent(firstConcurrent, sharedResource));
+        assertTrue(lock.tryConcurrent(secondConcurrent, sharedResource));
 
         // then
         assertFalse(lock.tryExclusive(exclusive, sharedResource, 200));

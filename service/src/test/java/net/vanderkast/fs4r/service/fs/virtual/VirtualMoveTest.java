@@ -75,7 +75,7 @@ class VirtualMoveTest {
         try {
             virtualMove.move(dto);
             fileNotFoundCaught = false;
-        } catch (FileNotFoundException ignored){
+        } catch (FileNotFoundException ignored) {
             fileNotFoundCaught = true;
         }
 
@@ -100,7 +100,7 @@ class VirtualMoveTest {
         try {
             virtualMove.move(dto);
             fileNotFoundCaught = false;
-        } catch (FileNotFoundException ignored){
+        } catch (FileNotFoundException ignored) {
             fileNotFoundCaught = true;
         }
 

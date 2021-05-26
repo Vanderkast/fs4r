@@ -1,7 +1,6 @@
 package net.vanderkast.fs4r.service.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,8 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +24,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/main/walk/**", "/api/v1/main/load/**", "/api/v1/main/download/**")
                 .hasAuthority(AUTHORITY_READ)
 
-                .antMatchers("/api/v1/main/move/**", "/api/v1/main/delete/**", "/api/v1/main/upload/**", "api/v1/lock")
+                .antMatchers("/api/v1/main/move/**", "/api/v1/main/delete/**", "/api/v1/main/upload/**", "api/v1/lock/**")
                 .hasAuthority(AUTHORITY_WRITE);
+        security.csrf().disable();
         security.httpBasic();
         security.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -37,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void users(AuthenticationManagerBuilder auth) throws Exception { // todo pass passwords via properties
         auth.inMemoryAuthentication()
                 .withUser("regular")
-                .password("{bcrypt}$2y$12$xznUZSKJX3t1Hy1iY5T6GeOL9iGcVxeiFCokOs.tFPdarSImsaMKS")
+                .password("{bcrypt}$2y$12$5GBgieTpZsK5ASKWSlS9T.ef0ZdUlR6mLv0aRZSobQ.FtsmdwVyCa")
                 .authorities(AUTHORITY_WRITE, AUTHORITY_READ)
 
                 .and()
