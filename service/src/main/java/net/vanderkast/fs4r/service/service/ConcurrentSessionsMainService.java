@@ -25,7 +25,7 @@ import static net.vanderkast.fs4r.service.configuration.Profiles.CONCURRENT_SESS
 
 @Service
 @Profile(CONCURRENT_SESSIONS)
-public class ConcurrentSessionsMainService implements Fs4rMainService {
+public class ConcurrentSessionsMainService implements Fs4rMainService, Fs4rStampedMainService { // todo tests
     private final ChronoStampPathLock<UUID> sessionLocks;
     private final ConcurrentWalk walk;
     private final ConcurrentMove move;
@@ -53,48 +53,48 @@ public class ConcurrentSessionsMainService implements Fs4rMainService {
 
     @Override
     public Stream<FileWalk> walkDir(Path virtualDir) throws IOException {
-        var stamp = UUID.randomUUID();
+        UUID stamp = UUID.randomUUID();
         try {
-            if (!sessionLocks.tryConcurrent(stamp, virtualDir, 100))
-                throw new ResourceBusyException();
-            return walk.tryNow(virtualDir)
-                    .orElseThrow(ResourceBusyException::new)
-                    .map(FileWalk::ofPath);
+            return walkDir(virtualDir, stamp);
         } finally {
             sessionLocks.unlock(stamp, virtualDir);
         }
     }
 
     @Override
+    public Stream<FileWalk> walkDir(Path virtualDir, UUID stamp) throws IOException {
+        if (!sessionLocks.tryConcurrent(stamp, virtualDir, 100))
+            throw new ResourceBusyException();
+        return walk.tryNow(virtualDir)
+                .orElseThrow(ResourceBusyException::new)
+                .map(FileWalk::ofPath);
+    }
+
+    @Override
     public void download(Path virtual, HttpServletResponse response) throws IOException {
-        var stamp = UUID.randomUUID();
+        UUID stamp = UUID.randomUUID();
         try {
-            if (!sessionLocks.tryConcurrent(stamp, virtual, 100)
-                    || !download.tryLoad(virtual, response))
-                throw new ResourceBusyException();
+            download(virtual, response, stamp);
         } finally {
             sessionLocks.unlock(stamp, virtual);
         }
     }
 
     @Override
-    public void move(MoveDto dto) throws IOException { // todo test on deadlocks
+    public void download(Path virtual, HttpServletResponse response, UUID stamp) throws IOException {
+        if (!sessionLocks.tryConcurrent(stamp, virtual, 100)
+                || !download.tryLoad(virtual, response))
+            throw new ResourceBusyException();
+    }
+
+    @Override
+    public void move(MoveDto dto) throws IOException {
         var stamp = UUID.randomUUID();
         var origin = dto.getOrigin();
         var target = dto.getTarget();
         var lockOriginFirst = origin.compareTo(target) <= 0;
         try {
-            if (lockOriginFirst) {
-                if (tryLock(stamp, origin, dto.isCopy())
-                        || sessionLocks.tryConcurrent(stamp, target, 100)
-                        || move.tryNow(dto).isEmpty())
-                    throw new ResourceBusyException();
-            } else {
-                if (sessionLocks.tryConcurrent(stamp, target, 100)
-                        || tryLock(stamp, origin, dto.isCopy())
-                        || move.tryNow(dto).isEmpty())
-                    throw new ResourceBusyException();
-            }
+            move(dto, stamp);
         } finally {
             if (lockOriginFirst) {
                 sessionLocks.unlock(stamp, target);
@@ -103,6 +103,23 @@ public class ConcurrentSessionsMainService implements Fs4rMainService {
                 sessionLocks.unlock(stamp, origin);
                 sessionLocks.unlock(stamp, target);
             }
+        }
+    }
+
+    @Override
+    public void move(MoveDto dto, UUID stamp) throws IOException {
+        var origin = dto.getOrigin();
+        var target = dto.getTarget();
+        if (origin.compareTo(target) <= 0) {
+            if (!tryLock(stamp, origin, dto.isCopy())
+                    || !sessionLocks.tryExclusive(stamp, target, 100)
+                    || move.tryNow(dto).isEmpty())
+                throw new ResourceBusyException();
+        } else {
+            if (!sessionLocks.tryExclusive(stamp, target, 100)
+                    || !tryLock(stamp, origin, dto.isCopy())
+                    || move.tryNow(dto).isEmpty())
+                throw new ResourceBusyException();
         }
     }
 
@@ -116,35 +133,50 @@ public class ConcurrentSessionsMainService implements Fs4rMainService {
     public void delete(Path virtual) throws IOException {
         var stamp = UUID.randomUUID();
         try {
-            if (!sessionLocks.tryExclusive(stamp, virtual, 100)
-                    || delete.tryNow(virtual).isEmpty())
-                throw new ResourceBusyException();
+            delete(virtual, stamp);
         } finally {
             sessionLocks.unlock(stamp, virtual);
         }
     }
 
     @Override
-    public String load(Path path) throws IOException {
+    public void delete(Path virtual, UUID stamp) throws IOException {
+        if (!sessionLocks.tryExclusive(stamp, virtual, 100)
+                || delete.tryNow(virtual).isEmpty())
+            throw new ResourceBusyException();
+    }
+
+    @Override
+    public String read(Path path) throws IOException {
         var stamp = UUID.randomUUID();
         try {
-            if (!sessionLocks.tryConcurrent(stamp, path, 100))
-                throw new ResourceBusyException();
-            return contentRead.tryNow(path).orElseThrow(ResourceBusyException::new);
+            return read(path, stamp);
         } finally {
             sessionLocks.unlock(stamp, path);
         }
     }
 
     @Override
-    public void upload(WriteDto writeDto) throws IOException {
+    public String read(Path path, UUID stamp) throws IOException {
+        if (!sessionLocks.tryConcurrent(stamp, path, 100))
+            throw new ResourceBusyException();
+        return contentRead.tryNow(path).orElseThrow(ResourceBusyException::new);
+    }
+
+    @Override
+    public void upload(WriteDto dto) throws IOException {
         var stamp = UUID.randomUUID();
         try {
-            if (!sessionLocks.tryConcurrent(stamp, writeDto.getPath(), 100)
-                    || write.tryNow(writeDto).isEmpty())
-                throw new ResourceBusyException();
+            upload(dto, stamp);
         } finally {
-            sessionLocks.unlock(stamp, writeDto.getPath());
+            sessionLocks.unlock(stamp, dto.getPath());
         }
+    }
+
+    @Override
+    public void upload(WriteDto writeDto, UUID stamp) throws IOException {
+        if (!sessionLocks.tryExclusive(stamp, writeDto.getPath(), 100)
+                || write.tryNow(writeDto).isEmpty())
+            throw new ResourceBusyException();
     }
 }

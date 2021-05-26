@@ -8,4 +8,6 @@ public interface StampPathLock<T> {
     boolean tryExclusive(T stamp, Path path);
 
     void unlock(T stamp, Path path);
+
+    boolean isOwning(T stamp, Path path);
 }

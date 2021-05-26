@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import static net.vanderkast.fs4r.service.fs.stamp_lock.ChronoLockHolder.FOREVER;
 import static net.vanderkast.fs4r.service.fs.stamp_lock.ChronoLockHolder.deadlineAfter;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConcurrentLockHolderTest {
     @Test

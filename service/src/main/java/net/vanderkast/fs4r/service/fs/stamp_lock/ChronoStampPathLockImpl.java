@@ -8,40 +8,40 @@ import java.util.concurrent.ConcurrentMap;
 import static net.vanderkast.fs4r.service.fs.stamp_lock.ChronoLockHolder.deadlineAfter;
 
 public class ChronoStampPathLockImpl<T extends Comparable<T>> implements ChronoStampPathLock<T> {
-    private final ConcurrentMap<Path, LockHolder<T>> pathLocks;
+    private final ConcurrentMap<Path, LockHolder<T>> pathLockOwners;
 
     public ChronoStampPathLockImpl() {
-        pathLocks = new ConcurrentHashMap<>();
+        pathLockOwners = new ConcurrentHashMap<>();
     }
 
-    public ChronoStampPathLockImpl(Map<Path, LockHolder<T>> pathLocks) {
-        this.pathLocks = new ConcurrentHashMap<>(pathLocks);
+    public ChronoStampPathLockImpl(Map<Path, LockHolder<T>> pathLockOwners) {
+        this.pathLockOwners = new ConcurrentHashMap<>(pathLockOwners);
     }
 
     @Override
     public boolean tryConcurrent(T candidate, Path path, long forMillis) {
-        LockHolder<T> current = pathLocks.get(path);
+        LockHolder<T> current = pathLockOwners.get(path);
         if (current == null || current.isInactive() || current.isConcurrent() || current.isOwner(candidate)) {
-            pathLocks.compute(path, (ignored, old) -> {
+            pathLockOwners.compute(path, (ignored, old) -> {
                 if (old != null)
                     return old.lock(candidate, deadlineAfter(forMillis));
                 return ConcurrentLockHolder.of(candidate, deadlineAfter(forMillis));
             });
         }
-        return pathLocks.get(path).isOwner(candidate);
+        return pathLockOwners.get(path).isOwner(candidate);
     }
 
     @Override
     public boolean tryExclusive(T candidate, Path path, long forMillis) {
-        LockHolder<T> current = pathLocks.get(path);
+        LockHolder<T> current = pathLockOwners.get(path);
         if (current == null || current.isInactive() || current.isOwner(candidate)) {
-            pathLocks.compute(path, (ignored, old) -> {
+            pathLockOwners.compute(path, (ignored, old) -> {
                 if (old != null)
                     return old.lock(candidate, deadlineAfter(forMillis));
                 return new ExclusiveLockHolder<>(candidate, deadlineAfter(forMillis));
             });
         }
-        return pathLocks.get(path).isOwner(candidate);
+        return pathLockOwners.get(path).isOwner(candidate);
     }
 
     @Override
@@ -56,6 +56,12 @@ public class ChronoStampPathLockImpl<T extends Comparable<T>> implements ChronoS
 
     @Override
     public void unlock(T stamp, Path path) {
-        pathLocks.computeIfPresent(path, (ignored, current) -> current.unlock(stamp));
+        pathLockOwners.computeIfPresent(path, (ignored, current) -> current.unlock(stamp));
+    }
+
+    @Override
+    public boolean isOwning(T stamp, Path path) {
+        var holder = pathLockOwners.get(path);
+        return holder != null && holder.isOwner(stamp);
     }
 }

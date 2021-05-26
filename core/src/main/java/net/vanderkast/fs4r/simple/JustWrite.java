@@ -11,16 +11,11 @@ import java.nio.file.StandardOpenOption;
 public class JustWrite implements Write {
     @Override
     public void write(WriteDto data) throws IOException {
-        data.getInputStream()
-                .transferTo(Files.newOutputStream(data.getPath(), getWriteOptions(data.isOverwrite())));
-    }
-
-    private OpenOption[] getWriteOptions(boolean overwrite) {
-        if (overwrite)
-            return new OpenOption[]{
-                    StandardOpenOption.CREATE_NEW,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE};
-        return new OpenOption[]{StandardOpenOption.APPEND};
+        if (data.isOverwrite()) {
+            data.getInputStream().transferTo(Files.newOutputStream(data.getPath()));
+        } else {
+            data.getInputStream()
+                    .transferTo(Files.newOutputStream(data.getPath(), StandardOpenOption.APPEND));
+        }
     }
 }

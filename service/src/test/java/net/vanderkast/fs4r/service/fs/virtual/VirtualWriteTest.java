@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class VirtualWriteTest {
@@ -42,10 +42,13 @@ class VirtualWriteTest {
     @Test
     void writeUnprotected() throws IOException {
         // given
-        var path = mock(Path.class);
-        doReturn(false).when(fs).isProtected(path);
-        doCallRealMethod().when(fs).verifyUnprotected(path);
-        var dto = new WriteDtoImpl(path, mock(InputStream.class), false);
+        var virtual = mock(Path.class);
+        doReturn(false).when(fs).isProtected(virtual);
+        doCallRealMethod().when(fs).verifyUnprotected(virtual);
+        var real = mock(Path.class);
+        doReturn(Optional.of(real)).when(fs).map(virtual);
+        doCallRealMethod().when(fs).mapOrThrow(virtual);
+        var dto = new WriteDtoImpl(virtual, mock(InputStream.class), false);
         boolean caughtProtected;
 
         // when
@@ -58,7 +61,12 @@ class VirtualWriteTest {
 
         // then
         assertFalse(caughtProtected);
-        verify(fs).isProtected(path);
-        verify(write).write(dto);
+        verify(fs).isProtected(virtual);
+        verify(write).write(argThat(actual -> {
+            assertEquals(real, actual.getPath());
+            assertEquals(dto.getInputStream(), actual.getInputStream());
+            assertEquals(dto.isOverwrite(), actual.isOverwrite());
+            return true;
+        }));
     }
 }

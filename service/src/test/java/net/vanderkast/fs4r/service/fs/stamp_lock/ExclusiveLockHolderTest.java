@@ -11,10 +11,10 @@ class ExclusiveLockHolderTest {
      * Given:
      * <p>{@link LockHolder<String>} <code>holder</code> with 1000s time and null {@link ExclusiveLockHolder#holder}.
      * That means <code>holder</code> should be inactive.</p>
-     *
+     * <p>
      * When:
      * <p><code>holder</code> is asked is some foolish stamp holds lock.</p>
-     *
+     * <p>
      * Then:
      * <p>No {@link NullPointerException} should not be caught.</p>
      */
@@ -68,7 +68,8 @@ class ExclusiveLockHolderTest {
         var current = holder.lock(traitor, deadlineAfter(10_000_000));
         // then
         assertNotNull(current);
-        assertSame(current, holder);
+        assertTrue(current.isOwner(owner));
+        assertTrue(holder.deadline < ((ChronoLockHolder<?>) current).deadline);
 
         // when
         var updated = holder.lock(owner, deadlineAfter(1_000_000));

@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class ServletVirtualAttachmentLoad implements AttachmentLoad<HttpServletResponse> { // todo test
-    private static final int BUFFER = 1024*3; // 3 Mb
+    private static final int BUFFER = 1024 * 3; // 3 Mb
 
     private final VirtualFileSystem fileSystem;
     private final ConcurrentLoad load;
@@ -47,12 +47,12 @@ public class ServletVirtualAttachmentLoad implements AttachmentLoad<HttpServletR
             if (!locked)
                 return false;
             var stream = load.tryNow(file);
-            if(stream.isEmpty())
+            if (stream.isEmpty())
                 return false;
             output.setHeader(
                     "Content-Disposition",
                     "attachment; filename=\"" + file.getFileName().toString() + "\"");
-            try(var input = stream.get()) {
+            try (var input = stream.get()) {
                 var buffer = new byte[BUFFER];
                 int length;
                 while ((length = input.read(buffer)) > 0)

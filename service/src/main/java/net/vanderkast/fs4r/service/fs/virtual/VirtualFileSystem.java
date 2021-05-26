@@ -40,8 +40,9 @@ public interface VirtualFileSystem {
     /**
      * <p>Returns stream of virtual root content.</p>
      * <p>It's thread safe method guarded by {@link VirtualFileSystem#isProtected(Path)} contract.</p>
-     * @return {@link Stream#of(Object)} of {@link Path} content lies in virtual root. 
-     * @throws IOException if delegation on other {@link net.vanderkast.fs4r.domain.Walk} implementation used. 
+     *
+     * @return {@link Stream#of(Object)} of {@link Path} content lies in virtual root.
+     * @throws IOException if delegation on other {@link net.vanderkast.fs4r.domain.Walk} implementation used.
      */
     Stream<Path> walkVirtualRoot() throws IOException;
 }

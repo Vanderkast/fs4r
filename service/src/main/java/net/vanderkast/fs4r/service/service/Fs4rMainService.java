@@ -2,7 +2,6 @@ package net.vanderkast.fs4r.service.service;
 
 import net.vanderkast.fs4r.dto.MoveDto;
 import net.vanderkast.fs4r.dto.WriteDto;
-import net.vanderkast.fs4r.dto.impl.WriteDtoImpl;
 import net.vanderkast.fs4r.service.model.FileWalk;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +18,7 @@ public interface Fs4rMainService {
 
     void delete(Path path) throws IOException;
 
-    String load(Path path) throws IOException;
+    String read(Path path) throws IOException;
 
     void upload(WriteDto writeDto) throws IOException;
 }
