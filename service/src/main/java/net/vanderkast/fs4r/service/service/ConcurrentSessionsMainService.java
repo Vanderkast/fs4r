@@ -53,7 +53,7 @@ public class ConcurrentSessionsMainService implements Fs4rMainService, Fs4rStamp
 
     @Override
     public Stream<FileWalk> walkDir(Path virtualDir) throws IOException {
-        UUID stamp = UUID.randomUUID();
+        var stamp = UUID.randomUUID();
         try {
             return walkDir(virtualDir, stamp);
         } finally {
@@ -72,7 +72,7 @@ public class ConcurrentSessionsMainService implements Fs4rMainService, Fs4rStamp
 
     @Override
     public void download(Path virtual, HttpServletResponse response) throws IOException {
-        UUID stamp = UUID.randomUUID();
+        var stamp = UUID.randomUUID();
         try {
             download(virtual, response, stamp);
         } finally {

@@ -41,7 +41,8 @@ public class VirtualFsConfiguration extends FsConfiguration implements ServiceCo
             this.publishedPaths = Stream.of(publishPaths).map(Path::of).collect(Collectors.toList());
         }
 
-        logger.info("Service publishes directories: {}", Arrays.toString(publishPaths));
+        if (logger.isInfoEnabled())
+            logger.info("Service publishes directories: {}", Arrays.toString(publishPaths));
 
         this.fileLoadingSizeLimit = fileLoadingSizeLimit;
         logger.info("Loading files size limit: {}", fileLoadingSizeLimit);

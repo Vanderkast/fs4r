@@ -30,7 +30,7 @@ class ConcurrentSessionsMainService_LockTest {
     private final AttachmentLoad<HttpServletResponse> download = mock(AttachmentLoad.class);
     private final ConcurrentWrite write = mock(ConcurrentWrite.class);
 
-    private ChronoStampPathLock<UUID> locks = new ChronoStampPathLockImpl<>();
+    private final ChronoStampPathLock<UUID> locks = new ChronoStampPathLockImpl<>();
 
     private final ConcurrentSessionsMainService service = new ConcurrentSessionsMainService(locks, walk, move, delete, read, download, write);
 

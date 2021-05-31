@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties
 public class Fs4rApplication {
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(Fs4rApplication.class);
+        var application = new SpringApplication(Fs4rApplication.class);
         application.run(args);
     }
 }

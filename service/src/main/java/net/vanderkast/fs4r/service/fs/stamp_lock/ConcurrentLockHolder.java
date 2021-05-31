@@ -39,13 +39,13 @@ class ConcurrentLockHolder<T> extends ChronoLockHolder<T> {
 
     @Override
     public boolean isInactive() {
-        return holders.size() <= 0 || super.isInactive();
+        return holders.isEmpty() || super.isInactive();
     }
 
     @Override
     public LockHolder<T> unlock(T stamp) {
         if (holders.contains(stamp)) {
-            ConcurrentLockHolder<T> holder = new ConcurrentLockHolder<>(holders, super.deadline);
+            var holder = new ConcurrentLockHolder<>(holders, super.deadline);
             holder.holders.remove(stamp);
             return holder;
         }
@@ -56,7 +56,7 @@ class ConcurrentLockHolder<T> extends ChronoLockHolder<T> {
     public LockHolder<T> lock(T stamp, long deadline) {
         if (holders.contains(stamp) && super.deadline > deadline)
             return this;
-        ConcurrentLockHolder<T> holder = new ConcurrentLockHolder<>(holders, newDeadline(deadline));
+        var holder = new ConcurrentLockHolder<>(holders, newDeadline(deadline));
         holder.holders.add(stamp);
         return holder;
     }

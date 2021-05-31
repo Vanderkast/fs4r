@@ -1,6 +1,8 @@
 package net.vanderkast.fs4r.service.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,10 +12,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
+@ConfigurationProperties(prefix = "fs4r.security")
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String AUTHORITY_READ = "READ";
     private static final String AUTHORITY_WRITE = "WRITE";
+
+    private final String readerPassword;
+    private final String regularPassword;
+
+    public SecurityConfiguration(@Value("${fs4r.security.reader-password:}") String readerPassword,
+                                 @Value("${fs4r.security.regular-password:}") String regularPassword) {
+        this.readerPassword = readerPassword == null || readerPassword.isEmpty()
+                ? "{bcrypt}$2y$12$4z8y0T6R.5aYu7HpqzPkE.pQF9twkbeSHnY5UoOEDMtKCbh0KPJ4q"
+                : readerPassword;
+        this.regularPassword = regularPassword == null || regularPassword.isEmpty()
+                ? "{bcrypt}$2y$12$5GBgieTpZsK5ASKWSlS9T.ef0ZdUlR6mLv0aRZSobQ.FtsmdwVyCa"
+                : regularPassword;
+    }
 
     @Override
     protected void configure(HttpSecurity security) throws Exception {
@@ -32,15 +48,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void users(AuthenticationManagerBuilder auth) throws Exception { // todo pass passwords via properties
+    public void users(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser("regular")
-                .password("{bcrypt}$2y$12$5GBgieTpZsK5ASKWSlS9T.ef0ZdUlR6mLv0aRZSobQ.FtsmdwVyCa")
+                .password(regularPassword)
                 .authorities(AUTHORITY_WRITE, AUTHORITY_READ)
 
                 .and()
                 .withUser("reader")
-                .password("{bcrypt}$2y$12$4z8y0T6R.5aYu7HpqzPkE.pQF9twkbeSHnY5UoOEDMtKCbh0KPJ4q")
+                .password(readerPassword)
                 .authorities(AUTHORITY_READ);
     }
 }
