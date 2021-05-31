@@ -18,7 +18,7 @@ import static net.vanderkast.fs4r.service.configuration.Profiles.CONCURRENT_SESS
 @RequestMapping("api/v1/lock")
 @Profile(CONCURRENT_SESSIONS)
 public class StampLockRestController {
-    private static final long MINUTE = 60 * 1000;
+    private static final long MINUTE = 60_000;
 
     private final ChronoStampPathLock<UUID> stampPathLock;
     private final Fs4rStampedMainService service;

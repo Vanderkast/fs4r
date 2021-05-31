@@ -14,6 +14,16 @@
       "name": "fs4r.load-files-size-limit",
       "type": "java.lang.String",
       "description": "File size limit for loading."
+    },
+    {
+      "name": "fs4r.security.reader-password",
+      "type": "java.lang.String",
+      "description": "Password used for user with READ ONLY permission."
+    },
+    {
+      "name": "fs4r.securoty-regular-password",
+      "type": "java.lang.String",
+      "description": "Password used for user with READ/WRITE permissions."
     }
   ]
 }

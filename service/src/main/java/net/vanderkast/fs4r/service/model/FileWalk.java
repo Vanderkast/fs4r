@@ -28,7 +28,7 @@ public class FileWalk {
                     attributes.creationTime().toMillis(),
                     attributes.lastModifiedTime().toMillis());
         } catch (IOException e) {
-            return new FileErr(file.getName(), file.isDirectory(), "Can't read file info");
+            return new FileErr(file.getName(), file.isDirectory());
         }
     }
 
@@ -47,11 +47,8 @@ public class FileWalk {
     }
 
     public static class FileErr extends FileWalk {
-        private final String error;
-
-        public FileErr(String name, boolean dir, String error) {
+        public FileErr(String name, boolean dir) {
             super(name, dir);
-            this.error = error;
         }
     }
 }

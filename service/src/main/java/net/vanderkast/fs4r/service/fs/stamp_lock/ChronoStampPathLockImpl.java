@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static net.vanderkast.fs4r.service.fs.stamp_lock.ChronoLockHolder.FOREVER;
 import static net.vanderkast.fs4r.service.fs.stamp_lock.ChronoLockHolder.deadlineAfter;
 
 public class ChronoStampPathLockImpl<T extends Comparable<T>> implements ChronoStampPathLock<T> {
@@ -46,12 +47,12 @@ public class ChronoStampPathLockImpl<T extends Comparable<T>> implements ChronoS
 
     @Override
     public boolean tryConcurrent(T stamp, Path path) {
-        return tryConcurrent(stamp, path, ConcurrentLockHolder.FOREVER);
+        return tryConcurrent(stamp, path, FOREVER);
     }
 
     @Override
     public boolean tryExclusive(T stamp, Path path) {
-        return tryExclusive(stamp, path, ConcurrentLockHolder.FOREVER);
+        return tryExclusive(stamp, path, FOREVER);
     }
 
     @Override
