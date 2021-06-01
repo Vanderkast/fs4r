@@ -9,7 +9,13 @@ public interface WriteDto {
     InputStream getInputStream();
 
     /**
+     * Affects only when {@link WriteDto#isReplace()} is false.
      * @return true - overwrite exist data, false - append to exist data
      */
     boolean isOverwrite();
+
+    /**
+     * @return true if replaces existing file, false - if should fail.
+     */
+    boolean isReplace();
 }

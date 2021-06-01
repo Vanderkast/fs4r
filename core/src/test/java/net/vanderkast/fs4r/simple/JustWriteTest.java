@@ -25,7 +25,7 @@ class JustWriteTest {
         var content = "write content";
         var model = new WriteDtoImpl(file,
                 new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)),
-                true);
+                true, false);
 
         // when
         write.write(model);
@@ -42,7 +42,7 @@ class JustWriteTest {
         assertTrue(Files.exists(file));
         var dto = new WriteDtoImpl(file,
                 new ByteArrayInputStream("tent".getBytes(StandardCharsets.UTF_8)),
-                false);
+                false, false);
 
         // when
         write.write(dto);
@@ -51,4 +51,6 @@ class JustWriteTest {
         var read = Files.readString(file);
         assertEquals("content", read);
     }
+
+    // todo implement replace tests
 }

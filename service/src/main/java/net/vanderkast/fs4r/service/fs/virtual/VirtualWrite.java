@@ -37,6 +37,6 @@ public class VirtualWrite implements ConcurrentWrite {
     }
 
     WriteDto map(WriteDto dto) throws FileNotFoundException {
-        return new WriteDtoImpl(fs.mapOrThrow(dto.getPath()), dto.getInputStream(), dto.isOverwrite());
+        return new WriteDtoImpl(fs.mapOrThrow(dto.getPath()), dto.getInputStream(), dto.isOverwrite(), dto.isReplace());
     }
 }

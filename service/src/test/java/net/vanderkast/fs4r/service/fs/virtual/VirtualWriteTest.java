@@ -27,7 +27,7 @@ class VirtualWriteTest {
 
         // when
         try {
-            virtualWrite.write(new WriteDtoImpl(path, mock(InputStream.class), false));
+            virtualWrite.write(new WriteDtoImpl(path, mock(InputStream.class), false, false));
             caughtProtected = false;
         } catch (ProtectedPathException ignored) {
             caughtProtected = true;
@@ -48,7 +48,7 @@ class VirtualWriteTest {
         var real = mock(Path.class);
         doReturn(Optional.of(real)).when(fs).map(virtual);
         doCallRealMethod().when(fs).mapOrThrow(virtual);
-        var dto = new WriteDtoImpl(virtual, mock(InputStream.class), false);
+        var dto = new WriteDtoImpl(virtual, mock(InputStream.class), false, false);
         boolean caughtProtected;
 
         // when

@@ -52,7 +52,7 @@ public class MainRestController {
     public void upload(@RequestParam("attachment") MultipartFile file,
                        @PathVariable("path") String path,
                        @RequestParam("overwrite") boolean overwrite) throws IOException {
-        service.upload(new WriteDtoImpl(Path.of(path), file.getInputStream(), overwrite));
+        service.upload(new WriteDtoImpl(Path.of(path), file.getInputStream(), overwrite, false));
     }
 
     @PostMapping("/move/{*origin}")

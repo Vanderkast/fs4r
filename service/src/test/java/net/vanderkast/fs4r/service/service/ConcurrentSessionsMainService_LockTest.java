@@ -49,7 +49,7 @@ class ConcurrentSessionsMainService_LockTest {
         assertThrows(ResourceBusyException.class, () -> service.delete(path));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(path, mock(Path.class), true, true)));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(mock(Path.class), path, true, true)));
-        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false)));
+        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false, false)));
         assertThrows(ResourceBusyException.class, () -> service.download(path, mock(HttpServletResponse.class)));
         verifyNoInteractions(walk, move, delete, read, download, write);
     }
@@ -70,7 +70,7 @@ class ConcurrentSessionsMainService_LockTest {
         assertThrows(ResourceBusyException.class, () -> service.delete(path, traitor));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(path, mock(Path.class), true, true), traitor));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(mock(Path.class), path, true, true), traitor));
-        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false), traitor));
+        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false, false), traitor));
         assertThrows(ResourceBusyException.class, () -> service.download(path, mock(HttpServletResponse.class), traitor));
         verifyNoInteractions(walk, move, delete, read, download, write);
     }
@@ -88,7 +88,7 @@ class ConcurrentSessionsMainService_LockTest {
         assertThrows(ResourceBusyException.class, () -> service.delete(path));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(path, mock(Path.class), false, true)));
         assertThrows(ResourceBusyException.class, () -> service.move(new MoveDtoImpl(mock(Path.class), path, false, true)));
-        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false)));
+        assertThrows(ResourceBusyException.class, () -> service.upload(new WriteDtoImpl(path, mock(InputStream.class), false, false)));
         verifyNoInteractions(walk, move, delete, read, download, write);
     }
 
@@ -146,7 +146,7 @@ class ConcurrentSessionsMainService_LockTest {
         service.move(copyDto, stamp);
         verify(move).tryNow(copyDto);
 
-        var writeDto = new WriteDtoImpl(path, mock(InputStream.class), true);
+        var writeDto = new WriteDtoImpl(path, mock(InputStream.class), true, false);
         doReturn(Optional.of(VoidOk.OK)).when(write).tryNow(writeDto);
         service.upload(writeDto, stamp);
         verify(write).tryNow(writeDto);
