@@ -65,8 +65,9 @@ public class StampMainRestController {
     public void upload(@RequestParam("attachment") MultipartFile file,
                        @PathVariable("path") String path,
                        @RequestParam(value = "overwrite", required = false) boolean overwrite,
+                       @RequestParam(value = "replace", required = false) boolean replace,
                        @RequestParam(required = false) String stamp) throws IOException {
-        var dto = new WriteDtoImpl(Path.of(path), file.getInputStream(), overwrite);
+        var dto = new WriteDtoImpl(Path.of(path), file.getInputStream(), overwrite, replace);
         if (stamp == null)
             service.upload(dto);
         else

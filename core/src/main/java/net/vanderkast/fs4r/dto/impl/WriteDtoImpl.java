@@ -7,13 +7,15 @@ import java.nio.file.Path;
 
 public class WriteDtoImpl implements WriteDto {
     private final Path path;
-    private final InputStream   inputStream;
+    private final InputStream inputStream;
     private final boolean overwrite;
+    private final boolean replace;
 
-    public WriteDtoImpl(Path path, InputStream inputStream, boolean overwrite) {
+    public WriteDtoImpl(Path path, InputStream inputStream, boolean overwrite, boolean replace) {
         this.path = path;
         this.inputStream = inputStream;
         this.overwrite = overwrite;
+        this.replace = replace;
     }
 
     @Override
@@ -29,5 +31,10 @@ public class WriteDtoImpl implements WriteDto {
     @Override
     public boolean isOverwrite() {
         return overwrite;
+    }
+
+    @Override
+    public boolean isReplace() {
+        return replace;
     }
 }
