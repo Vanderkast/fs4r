@@ -25,7 +25,7 @@ import static net.vanderkast.fs4r.service.configuration.Profiles.CONCURRENT_SESS
 
 @Service
 @Profile(CONCURRENT_SESSIONS)
-public class ConcurrentSessionsMainService implements Fs4rMainService, Fs4rStampedMainService { // todo tests
+public class ConcurrentSessionsMainService implements Fs4rMainService, Fs4rStampedMainService {
     private final ChronoStampPathLock<UUID> sessionLocks;
     private final ConcurrentWalk walk;
     private final ConcurrentMove move;
