@@ -34,7 +34,8 @@ Project is separated on `core` and `service` modules:
 
 #### Run docker container from GitHub Container registry
 
-This article will be added in the future.
+Run 'docker pull `ghcr.io/vanderkast/fs4r/fs4rservice:[VERSION]`. Checkout repository for version, use `latest` for
+lattest stable.
 
 #### Build your own docker container
 
