@@ -1,7 +1,13 @@
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM gradle:jdk11 as build
+WORKDIR /app
+COPY . .
+RUN /app/gradlew -p service bootJar
 
-COPY /service/build/libs/*jar /
-COPY /service/src/main/resources/* /
-RUN mv /fs4r-service*.jar /fs4r-service.jar
+FROM adoptopenjdk/openjdk11:alpine-jre as final
+WORKDIR /app
 
-ENTRYPOINT ["java", "-jar", "/fs4r-service.jar"]
+COPY --from=build /app/service/build/libs/*jar /app/
+COPY --from=build /app/service/src/main/resources/* /app/
+RUN mv /app/fs4r-service*.jar /app/fs4r-service.jar
+
+ENTRYPOINT ["java", "-jar", "/app/fs4r-service.jar"]
