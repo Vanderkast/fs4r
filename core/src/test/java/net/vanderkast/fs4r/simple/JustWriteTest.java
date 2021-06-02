@@ -7,12 +7,15 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class JustWriteTest {
     private final Write write = new JustWrite();
@@ -42,7 +45,7 @@ class JustWriteTest {
         assertTrue(Files.exists(file));
         var dto = new WriteDtoImpl(file,
                 new ByteArrayInputStream("tent".getBytes(StandardCharsets.UTF_8)),
-                false, false);
+                false, true);
 
         // when
         write.write(dto);
@@ -52,5 +55,40 @@ class JustWriteTest {
         assertEquals("content", read);
     }
 
-    // todo implement replace tests
+    @Test
+    void failOnExist(@TempDir Path tmp) throws IOException {
+        // given
+        var path = tmp.resolve("file");
+        var exist = Files.createFile(path);
+        assertTrue(Files.exists(exist));
+        boolean faeCaught;
+
+        // when
+        try {
+            write.write(new WriteDtoImpl(path, mock(InputStream.class), false, false));
+            faeCaught = false;
+        } catch (FileAlreadyExistsException ignored) {
+            faeCaught = true;
+        }
+
+        // then
+        assertTrue(faeCaught);
+    }
+
+    @Test
+    void replaceAndOverwriteExisted(@TempDir Path tmp) throws IOException {
+        // given
+        var path = tmp.resolve("file");
+        Files.writeString(path, "old");
+        assertEquals("old", Files.readString(path));
+
+        // when
+        write.write(new WriteDtoImpl(path,
+                new ByteArrayInputStream("new".getBytes(StandardCharsets.UTF_8)),
+                true,
+                true));
+
+        // then
+        assertEquals("new", Files.readString(path));
+    }
 }
